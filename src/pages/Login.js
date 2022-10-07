@@ -10,11 +10,24 @@ class Login extends React.Component {
     email: '',
   };
 
-  handleClick = async () => {
+  // handleClick = async () => {
+  //   const { dispatch } = this.props;
+  //   await dispatch(fetchToken());
+  //   const { history } = this.props;
+  //   history.push('/game');
+  // };
+
+  handleClick = async ({ target }) => {
+    const { name } = target;
     const { dispatch } = this.props;
-    await dispatch(fetchToken());
     const { history } = this.props;
-    history.push('/game');
+    if (name === 'btnLogin') {
+      await dispatch(fetchToken());
+      history.push('/game');
+    }
+    if (name === 'btnSettings') {
+      history.push('/settings');
+    }
   };
 
   handleChange = (e) => {
@@ -62,6 +75,14 @@ class Login extends React.Component {
           data-testid="btn-play"
         >
           Play
+        </button>
+        <button
+          type="button"
+          name="btnSettings"
+          onClick={ this.handleClick }
+          data-testid="btn-settings"
+        >
+          Configurações
         </button>
       </div>
     );
