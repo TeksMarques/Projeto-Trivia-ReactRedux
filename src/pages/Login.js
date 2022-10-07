@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { fetchToken } from '../redux/actions';
+import { fetchToken, getUser } from '../redux/actions';
 
 class Login extends React.Component {
   state = {
@@ -10,19 +10,12 @@ class Login extends React.Component {
     email: '',
   };
 
-  // handleClick = async () => {
-  //   const { dispatch } = this.props;
-  //   await dispatch(fetchToken());
-  //   const { history } = this.props;
-  //   history.push('/game');
-  // };
-
   handleClick = async ({ target }) => {
     const { name } = target;
-    const { dispatch } = this.props;
-    const { history } = this.props;
+    const { dispatch, history } = this.props;
     if (name === 'btnLogin') {
       await dispatch(fetchToken());
+      dispatch(getUser(this.state));
       history.push('/game');
     }
     if (name === 'btnSettings') {
@@ -37,9 +30,7 @@ class Login extends React.Component {
       const { email, user } = this.state;
       const regex = /\S+@\S+\.\S+/;
       const verifyEmail = email && regex.test(email);
-      console.log(verifyEmail);
       const verifyName = user.length >= MIN_LENGTH_PASS;
-      console.log(verifyName);
       this.setState({ isDisabled: !(verifyEmail && verifyName) });
     });
   };
