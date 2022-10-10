@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getScore } from '../redux/actions';
 
 class Trivia extends Component {
   state = {
@@ -9,6 +10,7 @@ class Trivia extends Component {
     correctColor: false,
     incorrectColor: false,
     isDisable: false,
+    timer: 30,
   };
 
   async componentDidMount() {
@@ -26,7 +28,7 @@ class Trivia extends Component {
       this.setState({
         allInfo: trivia,
       }, () => {
-        const test = trivia[0].incorrect_answers.map((c, i) => {
+        const incorrectAnswers = trivia[0].incorrect_answers.map((c, i) => {
           const objeto = {
             name: c,
             testid: `wrong-answer-${i}`,
@@ -37,8 +39,7 @@ class Trivia extends Component {
           name: trivia[0].correct_answer,
           testid: 'correct-answer',
         };
-        const allAnswers = [...test, correctAnswer];
-        // console.log('incorrect', trivia[0].incorrect_answers);
+        const allAnswers = [...incorrectAnswers, correctAnswer];
         const sorted = allAnswers.sort(() => Math.random() - MULTPLIER);
         console.log('sort', sorted);
         this.setState({
@@ -53,36 +54,56 @@ class Trivia extends Component {
     }
   }
 
-  handleColor = () => {
+  handleSum = (valor) => {
+    const { timer, allInfo } = this.state;
+    const { dispatch } = this.props;
+    const points = 10;
+    const medium = 2;
+    const easy = 1;
+    const hard = 3;
+    let sum = 0;
+    if (valor === 'verdadeiro') {
+      if (allInfo[0].difficulty === 'hard') {
+        sum = points + (timer * hard);
+      } if (allInfo[0].difficulty === 'medium') {
+        sum = points + (timer * medium);
+      } if (allInfo[0].difficulty === 'easy') {
+        sum = points + (timer * easy);
+      }
+      console.log(sum, 'antes do dispatch');
+      dispatch(getScore(sum));
+      return sum;
+    }
+  };
+
+  handleColor = ({ target }) => {
+    console.log(target.value);
     this.setState({
       correctColor: true,
       incorrectColor: true,
     });
+    // if (target.style.border === '3px solid rgb(6, 240, 15)') {
+    const valor = target.value;
+    this.handleSum(valor);
+    // }
   };
 
   timer = () => {
-    this.setState({ timer: 30 }, () => {
-      const second = 1000;
-      const idInterval = setInterval(() => {
-        this.setState((prevState) => ({
-          isDisable: false,
-          timer: prevState.timer - 1,
-        }), () => {
-          const { timer } = this.state;
-          if (timer === 0) {
-            clearInterval(idInterval);
-            this.setState({
-              isDisable: true,
-            });
-          }
-        });
-      }, second);
-    });
-  };
-
-  handle = () => {
-    const { allInfo } = this.state;
-    console.log(allInfo);
+    const second = 1000;
+    const idInterval = setInterval(() => {
+      this.setState((prevState) => ({
+        isDisable: false,
+        timer: prevState.timer - 1,
+      }), () => {
+        const { timer } = this.state;
+        if (timer === 0) {
+          clearInterval(idInterval);
+          this.setState({
+            isDisable: true,
+          });
+        }
+      });
+    }, second);
   };
 
   render() {
@@ -116,6 +137,7 @@ class Trivia extends Component {
                           <button
                             key={ question.name }
                             type="button"
+                            value="verdadeiro"
                             data-testid={ question.testid }
                             onClick={ this.handleColor }
                             disabled={ isDisable }

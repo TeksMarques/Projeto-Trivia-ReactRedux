@@ -17,7 +17,7 @@ class Header extends React.Component {
   }
 
   render() {
-    const { nome, email } = this.props;
+    const { nome, email, score } = this.props;
     const { hash } = this.state;
     return (
       <div>
@@ -36,7 +36,7 @@ class Header extends React.Component {
         />
         <span data-testid="header-score">
           Placar:
-          { 0 }
+          { score }
         </span>
       </div>
     );
@@ -44,13 +44,15 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  email: state.user.email,
-  nome: state.user.user,
+  email: state.player.email,
+  nome: state.player.user,
+  score: state.player.score,
 });
 
 Header.propTypes = {
   nome: PropTypes.string,
   email: PropTypes.string,
+  score: PropTypes.number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Header);
