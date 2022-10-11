@@ -12,6 +12,11 @@ class Feedback extends Component {
     this.getAssertions();
   }
 
+  redirectBtn = () => {
+    const { history } = this.props;
+    history.push('/');
+  };
+
   getAssertions = () => {
     const { assertions } = this.props;
     this.setState({ asserts: assertions });
@@ -40,6 +45,13 @@ class Feedback extends Component {
             ? <h1 data-testid="feedback-text">Could be better...</h1>
             : <h1 data-testid="feedback-text">Well Done!</h1>
         }
+        <button
+          type="button"
+          onClick={ this.redirectBtn }
+          data-testid="btn-play-again"
+        >
+          Play Again
+        </button>
       </div>
     );
   }
