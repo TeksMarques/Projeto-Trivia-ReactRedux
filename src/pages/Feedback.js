@@ -18,15 +18,21 @@ class Feedback extends Component {
   };
 
   render() {
-    const { assertions } = this.props;
+    const { assertions, score } = this.props;
     const { asserts } = this.state;
     const ASSERT_CRITERION = 3;
 
     return (
       <div>
         <Header />
-        <h2>
-          Acertos:
+        <h2
+          data-testid="feedback-total-score"
+        >
+          { score }
+        </h2>
+        <h2
+          data-testid="feedback-total-question"
+        >
           { asserts }
         </h2>
         {
@@ -41,6 +47,7 @@ class Feedback extends Component {
 
 const mapStateToProps = (state) => ({
   assertions: state.player.assertions,
+  score: state.player.score,
 });
 
 Feedback.propTypes = {
