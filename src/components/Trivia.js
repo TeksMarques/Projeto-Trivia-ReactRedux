@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getScore } from '../redux/actions';
 
 class Trivia extends Component {
   state = {
@@ -9,6 +10,7 @@ class Trivia extends Component {
     correctColor: false,
     incorrectColor: false,
     isDisable: false,
+    timer: 30,
     showTimer: false,
     isHiddenBtnNext: true,
     nextCounter: 0,
@@ -33,7 +35,7 @@ class Trivia extends Component {
       this.setState({
         allInfo: trivia,
       }, () => {
-        const test = trivia[0].incorrect_answers.map((c, i) => {
+        const incorrectAnswers = trivia[0].incorrect_answers.map((c, i) => {
           const objeto = {
             name: c,
             testid: `wrong-answer-${i}`,
@@ -44,7 +46,7 @@ class Trivia extends Component {
           name: trivia[0].correct_answer,
           testid: 'correct-answer',
         };
-        const allAnswers = [...test, correctAnswer];
+        const allAnswers = [...incorrectAnswers, correctAnswer];
         const sorted = allAnswers.sort(() => Math.random() - MULTPLIER);
         this.setState({
           answers: sorted,
@@ -58,13 +60,37 @@ class Trivia extends Component {
     }
   };
 
-  handleClick = () => {
+  handleSum = (valor) => {
+    const { timer, allInfo } = this.state;
+    const { dispatch } = this.props;
+    const points = 10;
+    const medium = 2;
+    const easy = 1;
+    const hard = 3;
+    let sum = 0;
+    if (valor === 'verdadeiro') {
+      if (allInfo[0].difficulty === 'hard') {
+        sum = points + (timer * hard);
+      } if (allInfo[0].difficulty === 'medium') {
+        sum = points + (timer * medium);
+      } if (allInfo[0].difficulty === 'easy') {
+        sum = points + (timer * easy);
+      }
+      console.log(sum, 'antes do dispatch');
+      dispatch(getScore(sum));
+      return sum;
+    }
+  };
+
+  handleClick = ({ target }) => {
     this.setState({
       correctColor: true,
       incorrectColor: true,
       showTimer: true,
       isHiddenBtnNext: false,
     });
+    const valor = target.value;
+    this.handleSum(valor);
   };
 
   handleNextCounter = () => {
@@ -106,6 +132,21 @@ class Trivia extends Component {
         });
       }, second);
     });
+    const second = 1000;
+    const idInterval = setInterval(() => {
+      this.setState((prevState) => ({
+        isDisable: false,
+        timer: prevState.timer - 1,
+      }), () => {
+        const { timer } = this.state;
+        if (timer === 0) {
+          clearInterval(idInterval);
+          this.setState({
+            isDisable: true,
+          });
+        }
+      });
+    }, second);
   };
 
   render() {
@@ -136,6 +177,7 @@ class Trivia extends Component {
                           <button
                             key={ question.name }
                             type="button"
+                            value="verdadeiro"
                             data-testid={ question.testid }
                             onClick={ this.handleClick }
                             disabled={ isDisable }
@@ -198,5 +240,3 @@ Trivia.propTypes = {
   }),
 }.isRequired;
 export default connect()(Trivia);
-
-// asdasdasdasd //
