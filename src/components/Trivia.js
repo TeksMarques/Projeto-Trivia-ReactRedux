@@ -11,15 +11,25 @@ class Trivia extends Component {
     isDisable: false,
     showTimer: false,
     isHiddenBtnNext: true,
+    nextCounter: 0,
   };
 
   async componentDidMount() {
     this.timer();
+    this.fetchApiAnswers();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer());
+    console.log('morreu');
+  }
+
+  fetchApiAnswers = async () => {
     const VALID_CODE = 0;
     const INVALID_CODE = 3;
     const MULTPLIER = 0.5;
     const token = localStorage.getItem('token');
-    const url = `https://opentdb.com/api.php?amount=5&token=${token}`;
+    const url = `https://opentdb.com/api.php?amount=5&token=${ token }`;
     const get = await fetch(url);
     const result = await get.json();
     const trivia = result.results;
@@ -31,7 +41,7 @@ class Trivia extends Component {
         const test = trivia[0].incorrect_answers.map((c, i) => {
           const objeto = {
             name: c,
-            testid: `wrong-answer-${i}`,
+            testid: `wrong-answer-${ i }`,
           };
           return objeto;
         });
@@ -51,7 +61,7 @@ class Trivia extends Component {
       const { history } = this.props;
       history.push('/');
     }
-  }
+  };
 
   handleClick = () => {
     this.setState({
@@ -60,6 +70,28 @@ class Trivia extends Component {
       showTimer: true,
       isHiddenBtnNext: false,
     });
+  };
+
+  handleNextCounter = () => {
+    const { nextCounter } = this.state;
+    const MAX_QUESTION = 4;
+    this.setState((prevstate) => ({
+      nextCounter: prevstate.nextCounter + 1,
+    }), () => this.fetchApiAnswers());
+    this.setState({
+      isHiddenBtnNext: true,
+      showTimer: false,
+    }, () => this.setState({
+      timer: 30,
+      correctColor: false,
+      incorrectColor: false,
+    }));
+    console.log(nextCounter);
+    if (nextCounter === MAX_QUESTION) {
+      const { history } = this.props;
+      console.log(history);
+      history.push('/feedback');
+    }
   };
 
   timer = () => {
@@ -75,6 +107,7 @@ class Trivia extends Component {
             clearInterval(idInterval);
             this.setState({
               isDisable: true,
+              isHiddenBtnNext: false,
             });
           }
         });
@@ -104,12 +137,12 @@ class Trivia extends Component {
               <h2
                 data-testid="question-category"
               >
-                { `Category: ${allInfo[0].category}` }
+                { `Category: ${ allInfo[0].category }` }
               </h2>
               <h3
                 data-testid="question-text"
               >
-                { `Question: ${allInfo[0].question}` }
+                { `Question: ${ allInfo[0].question }` }
               </h3>
               <div>
                 <div data-testid="answer-options">
@@ -165,7 +198,7 @@ class Trivia extends Component {
                   <button
                     id="button"
                     type="button"
-                    onClick={ this.handle }
+                    onClick={ this.handleNextCounter }
                     data-testid="btn-next"
                   >
                     Next
