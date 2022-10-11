@@ -34,10 +34,13 @@ class Header extends React.Component {
           alt="Foto de perfil"
           data-testid="header-profile-picture"
         />
-        <span data-testid="header-score">
+        <label htmlFor="Placar">
           Placar:
-          { score }
-        </span>
+          <h3 data-testid="header-score">
+            { score }
+          </h3>
+
+        </label>
       </div>
     );
   }

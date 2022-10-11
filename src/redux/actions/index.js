@@ -24,9 +24,9 @@ export const error = (e) => ({
   payload: e,
 });
 
-export const getScore = (payload) => ({
+export const getScore = (score) => ({
   type: GET_SCORE,
-  payload,
+  payload: Number(score),
 });
 
 export const fetchToken = () => async (dispatch) => {
