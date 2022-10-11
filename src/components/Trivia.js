@@ -76,7 +76,6 @@ class Trivia extends Component {
       } if (allInfo[0].difficulty === 'easy') {
         sum = points + (timer * easy);
       }
-      console.log(sum, 'antes do dispatch');
       dispatch(getScore(sum));
       return sum;
     }
@@ -132,21 +131,6 @@ class Trivia extends Component {
         });
       }, second);
     });
-    const second = 1000;
-    const idInterval = setInterval(() => {
-      this.setState((prevState) => ({
-        isDisable: false,
-        timer: prevState.timer - 1,
-      }), () => {
-        const { timer } = this.state;
-        if (timer === 0) {
-          clearInterval(idInterval);
-          this.setState({
-            isDisable: true,
-          });
-        }
-      });
-    }, second);
   };
 
   render() {
@@ -239,4 +223,5 @@ Trivia.propTypes = {
     push: PropTypes.func,
   }),
 }.isRequired;
+
 export default connect()(Trivia);
