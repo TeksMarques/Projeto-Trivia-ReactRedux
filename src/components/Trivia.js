@@ -213,3 +213,5 @@ Trivia.propTypes = {
 }.isRequired;
 
 export default connect()(Trivia);
+
+// agora vai //
