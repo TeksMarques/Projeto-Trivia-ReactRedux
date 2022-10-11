@@ -11,6 +11,8 @@ class Trivia extends Component {
     incorrectColor: false,
     isDisable: false,
     timer: 30,
+    showTimer: false,
+    isHiddenBtnNext: true,
   };
 
   async componentDidMount() {
@@ -41,7 +43,6 @@ class Trivia extends Component {
         };
         const allAnswers = [...incorrectAnswers, correctAnswer];
         const sorted = allAnswers.sort(() => Math.random() - MULTPLIER);
-        console.log('sort', sorted);
         this.setState({
           answers: sorted,
         });
@@ -76,16 +77,16 @@ class Trivia extends Component {
     }
   };
 
-  handleColor = ({ target }) => {
-    console.log(target.value);
+  handleClick = ({target}) => {
     this.setState({
       correctColor: true,
       incorrectColor: true,
+      showTimer: true,
+      isHiddenBtnNext: false,
     });
-    // if (target.style.border === '3px solid rgb(6, 240, 15)') {
     const valor = target.value;
     this.handleSum(valor);
-    // }
+
   };
 
   timer = () => {
@@ -112,7 +113,9 @@ class Trivia extends Component {
       correctColor,
       incorrectColor,
       timer,
-      isDisable } = this.state;
+      isDisable,
+      showTimer,
+      isHiddenBtnNext } = this.state;
     return (
       <div>
         {
@@ -139,7 +142,7 @@ class Trivia extends Component {
                             type="button"
                             value="verdadeiro"
                             data-testid={ question.testid }
-                            onClick={ this.handleColor }
+                            onClick={ this.handleClick }
                             disabled={ isDisable }
                             style={ {
                               border:
@@ -154,7 +157,7 @@ class Trivia extends Component {
                           <button
                             key={ question.name }
                             type="button"
-                            onClick={ this.handleColor }
+                            onClick={ this.handleClick }
                             disabled={ isDisable }
                             data-testid={ question.testid }
                             style={ {
@@ -170,10 +173,28 @@ class Trivia extends Component {
                   }
                 </div>
                 <div>
-                  <h1>{ timer }</h1>
+                  <h1
+                    hidden={ showTimer }
+                  >
+                    { timer }
+                  </h1>
                 </div>
               </div>
+              {
+                !isHiddenBtnNext
+                && (
+                  <button
+                    id="button"
+                    type="button"
+                    onClick={ this.handle }
+                    data-testid="btn-next"
+                  >
+                    Next
+                  </button>
+                )
+              }
               <button
+                id="button"
                 type="button"
                 onClick={ this.handle }
               >
