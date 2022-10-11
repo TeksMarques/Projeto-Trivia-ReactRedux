@@ -14,6 +14,9 @@ class Trivia extends Component {
     showTimer: false,
     isHiddenBtnNext: true,
     nextCounter: 0,
+    isQuestionShow: false,
+    assertions: 1,
+    infoIndex: 0,
   };
 
   async componentDidMount() {
@@ -22,6 +25,7 @@ class Trivia extends Component {
   }
 
   fetchApiAnswers = async () => {
+    const { infoIndex } = this.state;
     const VALID_CODE = 0;
     const INVALID_CODE = 3;
     const MULTPLIER = 0.5;
@@ -34,8 +38,9 @@ class Trivia extends Component {
     if (trivia && getCode === VALID_CODE) {
       this.setState({
         allInfo: trivia,
+        isQuestionShow: true,
       }, () => {
-        const incorrectAnswers = trivia[0].incorrect_answers.map((c, i) => {
+        const incorrectAnswers = trivia[infoIndex].incorrect_answers.map((c, i) => {
           const objeto = {
             name: c,
             testid: `wrong-answer-${i}`,
@@ -43,7 +48,7 @@ class Trivia extends Component {
           return objeto;
         });
         const correctAnswer = {
-          name: trivia[0].correct_answer,
+          name: trivia[infoIndex].correct_answer,
           testid: 'correct-answer',
         };
         const allAnswers = [...incorrectAnswers, correctAnswer];
@@ -61,22 +66,25 @@ class Trivia extends Component {
   };
 
   handleSum = (valor) => {
-    const { timer, allInfo } = this.state;
+    const { timer, allInfo, infoIndex } = this.state;
     const { dispatch } = this.props;
     const points = 10;
-    const medium = 2;
     const easy = 1;
+    const medium = 2;
     const hard = 3;
     let sum = 0;
     if (valor === 'verdadeiro') {
-      if (allInfo[0].difficulty === 'hard') {
+      this.setState((prevstate) => ({
+        assertions: prevstate.assertions + 1,
+      }));
+      if (allInfo[infoIndex].difficulty === 'hard') {
         sum = points + (timer * hard);
-      } if (allInfo[0].difficulty === 'medium') {
+      } if (allInfo[infoIndex].difficulty === 'medium') {
         sum = points + (timer * medium);
-      } if (allInfo[0].difficulty === 'easy') {
+      } if (allInfo[infoIndex].difficulty === 'easy') {
         sum = points + (timer * easy);
       }
-      dispatch(getScore(sum));
+      dispatch(getScore(Number(sum)));
       return sum;
     }
   };
@@ -95,18 +103,22 @@ class Trivia extends Component {
   handleNextCounter = () => {
     const { nextCounter } = this.state;
     const MAX_QUESTION = 4;
-    const { history } = this.props;
     this.setState((prevstate) => ({
       nextCounter: prevstate.nextCounter + 1,
+      infoIndex: prevstate.infoIndex + 1,
     }), () => this.fetchApiAnswers());
     this.setState({
       isHiddenBtnNext: true,
       showTimer: false,
+      isQuestionShow: false,
+
     }, () => this.setState({
       timer: 30,
       correctColor: false,
       incorrectColor: false,
+      isQuestionShow: false,
     }));
+    const { history } = this.props;
     if (nextCounter === MAX_QUESTION) {
       history.push('/feedback');
     }
@@ -136,27 +148,29 @@ class Trivia extends Component {
   render() {
     const { answers,
       allInfo, correctColor, incorrectColor, timer,
-      isDisable, showTimer, isHiddenBtnNext } = this.state;
+      isDisable, showTimer, isHiddenBtnNext, isQuestionShow, infoIndex } = this.state;
     return (
       <div>
         {
-          answers.length > 0 && (
+          isQuestionShow
+          && answers.length > 0 && (
             <div>
               <h2
                 data-testid="question-category"
               >
-                { `Category: ${allInfo[0].category}` }
+                { `${allInfo[infoIndex].category}` }
               </h2>
               <h3
                 data-testid="question-text"
               >
-                { `Question: ${allInfo[0].question}` }
+                { `${allInfo[infoIndex].question}` }
               </h3>
               <div>
                 <div data-testid="answer-options">
                   {
-                    answers.map((question) => (
-                      question.name === allInfo[0].correct_answer
+                    isQuestionShow
+                    && answers.map((question) => (
+                      question.name === allInfo[infoIndex].correct_answer
                         ? (
                           <button
                             key={ question.name }

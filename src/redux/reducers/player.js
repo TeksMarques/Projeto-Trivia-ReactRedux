@@ -14,8 +14,8 @@ function player(state = INITIAL_STATE, action) {
       user: action.payload.user,
     });
   case GET_SCORE:
-    console.log(state, action, 'aqui');
-    return ({ ...state, score: action.payload + state.score });
+    return ({ ...state, score: Number(action.payload) + Number(state.score) }
+    );
   default:
     return state;
   }
