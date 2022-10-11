@@ -77,7 +77,7 @@ class Trivia extends Component {
     }
   };
 
-  handleClick = ({target}) => {
+  handleClick = ({ target }) => {
     this.setState({
       correctColor: true,
       incorrectColor: true,
@@ -86,7 +86,6 @@ class Trivia extends Component {
     });
     const valor = target.value;
     this.handleSum(valor);
-
   };
 
   timer = () => {
