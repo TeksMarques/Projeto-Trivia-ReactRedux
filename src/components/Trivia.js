@@ -13,10 +13,15 @@ class Trivia extends Component {
     timer: 30,
     showTimer: false,
     isHiddenBtnNext: true,
+    nextCounter: 0,
   };
 
   async componentDidMount() {
     this.timer();
+    this.fetchApiAnswers();
+  }
+
+  fetchApiAnswers = async () => {
     const VALID_CODE = 0;
     const INVALID_CODE = 3;
     const MULTPLIER = 0.5;
@@ -53,7 +58,7 @@ class Trivia extends Component {
       const { history } = this.props;
       history.push('/');
     }
-  }
+  };
 
   handleSum = (valor) => {
     const { timer, allInfo } = this.state;
@@ -88,7 +93,45 @@ class Trivia extends Component {
     this.handleSum(valor);
   };
 
+  handleNextCounter = () => {
+    const { nextCounter } = this.state;
+    const MAX_QUESTION = 4;
+    const { history } = this.props;
+    this.setState((prevstate) => ({
+      nextCounter: prevstate.nextCounter + 1,
+    }), () => this.fetchApiAnswers());
+    this.setState({
+      isHiddenBtnNext: true,
+      showTimer: false,
+    }, () => this.setState({
+      timer: 30,
+      correctColor: false,
+      incorrectColor: false,
+    }));
+    if (nextCounter === MAX_QUESTION) {
+      history.push('/feedback');
+    }
+  };
+
   timer = () => {
+    this.setState({ timer: 30 }, () => {
+      const second = 1000;
+      const idInterval = setInterval(() => {
+        this.setState((prevState) => ({
+          isDisable: false,
+          timer: prevState.timer - 1,
+        }), () => {
+          const { timer } = this.state;
+          if (timer === 0) {
+            clearInterval(idInterval);
+            this.setState({
+              isDisable: true,
+              isHiddenBtnNext: false,
+            });
+          }
+        });
+      }, second);
+    });
     const second = 1000;
     const idInterval = setInterval(() => {
       this.setState((prevState) => ({
@@ -108,13 +151,8 @@ class Trivia extends Component {
 
   render() {
     const { answers,
-      allInfo,
-      correctColor,
-      incorrectColor,
-      timer,
-      isDisable,
-      showTimer,
-      isHiddenBtnNext } = this.state;
+      allInfo, correctColor, incorrectColor, timer,
+      isDisable, showTimer, isHiddenBtnNext } = this.state;
     return (
       <div>
         {
@@ -144,8 +182,7 @@ class Trivia extends Component {
                             onClick={ this.handleClick }
                             disabled={ isDisable }
                             style={ {
-                              border:
-                                correctColor
+                              border: correctColor
                                 && '3px solid rgb(6, 240, 15)',
                             } }
                           >
@@ -160,8 +197,7 @@ class Trivia extends Component {
                             disabled={ isDisable }
                             data-testid={ question.testid }
                             style={ {
-                              border:
-                                incorrectColor
+                              border: incorrectColor
                                 && '3px solid red',
                             } }
                           >
@@ -185,33 +221,22 @@ class Trivia extends Component {
                   <button
                     id="button"
                     type="button"
-                    onClick={ this.handle }
+                    onClick={ this.handleNextCounter }
                     data-testid="btn-next"
                   >
                     Next
                   </button>
                 )
               }
-              <button
-                id="button"
-                type="button"
-                onClick={ this.handle }
-              >
-                teste
-              </button>
             </div>)
         }
       </div>
     );
   }
 }
-
 Trivia.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
 }.isRequired;
-
 export default connect()(Trivia);
-
-// agora vai //
