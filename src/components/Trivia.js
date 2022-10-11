@@ -70,6 +70,7 @@ class Trivia extends Component {
   handleNextCounter = () => {
     const { nextCounter } = this.state;
     const MAX_QUESTION = 4;
+    const { history } = this.props;
     this.setState((prevstate) => ({
       nextCounter: prevstate.nextCounter + 1,
     }), () => this.fetchApiAnswers());
@@ -81,10 +82,7 @@ class Trivia extends Component {
       correctColor: false,
       incorrectColor: false,
     }));
-    console.log(nextCounter);
     if (nextCounter === MAX_QUESTION) {
-      const { history } = this.props;
-      console.log(history);
       history.push('/feedback');
     }
   };
@@ -110,20 +108,10 @@ class Trivia extends Component {
     });
   };
 
-  handle = () => {
-    const { allInfo } = this.state;
-    console.log(allInfo);
-  };
-
   render() {
     const { answers,
-      allInfo,
-      correctColor,
-      incorrectColor,
-      timer,
-      isDisable,
-      showTimer,
-      isHiddenBtnNext } = this.state;
+      allInfo, correctColor, incorrectColor, timer,
+      isDisable, showTimer, isHiddenBtnNext } = this.state;
     return (
       <div>
         {
@@ -152,8 +140,7 @@ class Trivia extends Component {
                             onClick={ this.handleClick }
                             disabled={ isDisable }
                             style={ {
-                              border:
-                                correctColor
+                              border: correctColor
                                 && '3px solid rgb(6, 240, 15)',
                             } }
                           >
@@ -168,8 +155,7 @@ class Trivia extends Component {
                             disabled={ isDisable }
                             data-testid={ question.testid }
                             style={ {
-                              border:
-                                incorrectColor
+                              border: incorrectColor
                                 && '3px solid red',
                             } }
                           >
@@ -200,26 +186,15 @@ class Trivia extends Component {
                   </button>
                 )
               }
-              <button
-                id="button"
-                type="button"
-                onClick={ this.handle }
-              >
-                teste
-              </button>
             </div>)
         }
       </div>
     );
   }
 }
-
 Trivia.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
 }.isRequired;
-
 export default connect()(Trivia);
-
-// teste //
