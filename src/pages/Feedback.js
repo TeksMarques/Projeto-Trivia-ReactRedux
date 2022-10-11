@@ -12,9 +12,14 @@ class Feedback extends Component {
     this.getAssertions();
   }
 
-  redirectBtn = () => {
+  btnPlayAgain = () => {
     const { history } = this.props;
     history.push('/');
+  };
+
+  btnRanking = () => {
+    const { history } = this.props;
+    history.push('/ranking');
   };
 
   getAssertions = () => {
@@ -47,10 +52,17 @@ class Feedback extends Component {
         }
         <button
           type="button"
-          onClick={ this.redirectBtn }
+          onClick={ this.btnPlayAgain }
           data-testid="btn-play-again"
         >
           Play Again
+        </button>
+        <button
+          type="button"
+          onClick={ this.btnRanking }
+          data-testid="btn-ranking"
+        >
+          Ranking
         </button>
       </div>
     );
