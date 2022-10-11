@@ -19,17 +19,12 @@ class Trivia extends Component {
     this.fetchApiAnswers();
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.timer());
-    console.log('morreu');
-  }
-
   fetchApiAnswers = async () => {
     const VALID_CODE = 0;
     const INVALID_CODE = 3;
     const MULTPLIER = 0.5;
     const token = localStorage.getItem('token');
-    const url = `https://opentdb.com/api.php?amount=5&token=${ token }`;
+    const url = `https://opentdb.com/api.php?amount=5&token=${token}`;
     const get = await fetch(url);
     const result = await get.json();
     const trivia = result.results;
@@ -41,7 +36,7 @@ class Trivia extends Component {
         const test = trivia[0].incorrect_answers.map((c, i) => {
           const objeto = {
             name: c,
-            testid: `wrong-answer-${ i }`,
+            testid: `wrong-answer-${i}`,
           };
           return objeto;
         });
@@ -137,12 +132,12 @@ class Trivia extends Component {
               <h2
                 data-testid="question-category"
               >
-                { `Category: ${ allInfo[0].category }` }
+                { `Category: ${allInfo[0].category}` }
               </h2>
               <h3
                 data-testid="question-text"
               >
-                { `Question: ${ allInfo[0].question }` }
+                { `Question: ${allInfo[0].question}` }
               </h3>
               <div>
                 <div data-testid="answer-options">
