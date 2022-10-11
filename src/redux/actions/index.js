@@ -3,6 +3,7 @@ export const GET_USER = 'GET_USER';
 export const GET_ANSWERS = 'GET_ANSWERS';
 export const GET_ERROR = 'GET_ERROR';
 export const GET_SCORE = 'GET_SCORE';
+export const GET_ASSERTIONS = 'GET_ASSERTIONS';
 
 export const getToken = (token) => ({
   type: GET_TOKEN,
@@ -17,6 +18,11 @@ export const getUser = (state) => ({
 export const getAnswers = (payload) => ({
   type: GET_ANSWERS,
   payload,
+});
+
+export const getAssertions = (asserts) => ({
+  type: GET_ASSERTIONS,
+  payload: asserts,
 });
 
 export const error = (e) => ({

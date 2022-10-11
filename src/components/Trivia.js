@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getScore } from '../redux/actions';
+import { getScore, getAssertions } from '../redux/actions';
 
 class Trivia extends Component {
   state = {
@@ -66,7 +66,7 @@ class Trivia extends Component {
   };
 
   handleSum = (valor) => {
-    const { timer, allInfo, infoIndex } = this.state;
+    const { timer, allInfo, infoIndex, assertions } = this.state;
     const { dispatch } = this.props;
     const points = 10;
     const easy = 1;
@@ -77,6 +77,7 @@ class Trivia extends Component {
       this.setState((prevstate) => ({
         assertions: prevstate.assertions + 1,
       }));
+      dispatch(getAssertions(assertions));
       if (allInfo[infoIndex].difficulty === 'hard') {
         sum = points + (timer * hard);
       } if (allInfo[infoIndex].difficulty === 'medium') {
