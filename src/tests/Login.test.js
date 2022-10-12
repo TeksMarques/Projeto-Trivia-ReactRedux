@@ -3,6 +3,9 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
 import App from '../App';
+import NotFound from '../pages/NotFound';
+import Ranking from '../pages/Ranking';
+import Feedback from '../pages/Feedback';
 
 // import mockData from './helpers/mockData';
 
@@ -56,12 +59,37 @@ describe('Testa os elementos da tela de login e seu comportamento', () => {
   userEvent.click(btnPlay);
   await waitFor(() => expect(history.location.pathname).toBe('/game'));
   
-  const gameTitle = screen.getByRole('heading', {
-    name: /game/i
-  })
-  expect(gameTitle).toBeInTheDocument();
+  const headerPlayerName = screen.getByTestId('header-player-name')
+  expect(headerPlayerName).toBeInTheDocument();
+
+  const headerPlayerEmail = screen.getByText(/email:/i)
+  expect(headerPlayerEmail).toBeInTheDocument();
+
+  const placar = screen.getByText(/placar:/i)
+  expect(placar).toBeInTheDocument();
+
+  const score = screen.getByTestId('header-score');
+  expect(score).toBeInTheDocument();
+  expect(score).toHaveTextContent(0);
+
+  await waitFor(() => expect(screen.getByTestId('question-category')).toBeInTheDocument());
+
+  await waitFor(() => expect(screen.getByTestId('question-text')).toBeInTheDocument());
+
+  await waitFor(() => expect(screen.getByTestId('answer-options')).toBeInTheDocument());
+
+  
+  const btnsOptions = screen.getAllByRole('button');
+  expect(btnsOptions).not.toHaveLength(0);
+  userEvent.click(btnsOptions[0]);
+  
+  const btnNext = screen.getByTestId('btn-next');
+  await waitFor(() => expect(btnNext).toBeInTheDocument());
+  userEvent.click(btnNext);
+
 
   });
+
 test('se ao clicar no botão configurações a página é redirecionada para /settings', async () => {
   const { history } = renderWithRouterAndRedux(<App />);
   const { pathname } = history.location;
@@ -75,7 +103,75 @@ test('se ao clicar no botão configurações a página é redirecionada para /se
   const settingsTitle = screen.getByTestId(SETTINGS_TITLE_ID);
   expect(settingsTitle).toBeInTheDocument();
 
+  const nothingToShow = screen.getByText(/nothing to show/i)
+  expect(nothingToShow).toBeInTheDocument();
+
+  const btnVoltar = screen.getByRole('button', {
+    name: /voltar/i
+  });
+  expect(btnVoltar).toBeInTheDocument();
+
+  userEvent.click(btnVoltar);
+  await waitFor(() => expect(history.location.pathname).toBe('/'));
+
 });
-})
+});
+
+test('se os elementos são renderizados como esperado na página NotFound', async () => {
+  renderWithRouterAndRedux(<NotFound />);
+
+  const teste = screen.getByRole('heading', {
+    name: /página não encontrada/i
+  });
+  expect(teste).toBeInTheDocument();
+});
+
+test('se os elementos são renderizados como esperado na página Ranking', async () => {
+  const { history } = renderWithRouterAndRedux(<Ranking />);
+
+  const ranking = screen.getByRole('heading', {
+    name: /ranking/i
+  })
+  expect(ranking).toBeInTheDocument();
+
+  const btnHome = screen.getByRole('button', {
+    name: /home/i
+  });
+  expect(btnHome).toBeInTheDocument();
+
+  userEvent.click(btnHome);
+
+  await waitFor(() => expect(history.location.pathname).toBe('/'));
+});
+
+test('se os elementos são renderizados como esperado no componente Feedback', async () => {
+  renderWithRouterAndRedux(<Feedback />);
+
+  const feedBack = screen.getByTestId('feedback-text')
+  expect(feedBack).toBeInTheDocument();
+
+  const toalQuestions = screen.getByTestId('feedback-total-question');
+  const totalScore = screen.getByTestId('feedback-total-score');
+  const btnPlayAgain = screen.getByTestId('btn-play-again');
+
+  expect(toalQuestions).toBeInTheDocument();
+  expect(totalScore).toBeInTheDocument();
+  expect(btnPlayAgain).toBeInTheDocument();
+  
+  userEvent.click(btnPlayAgain);
+  await waitFor(() => expect(history.location.pathname).toBe('/'));
+
+});
+
+test('se, no componente Feedback, ao clicar no botão Ranking a página é redirecionada corretamente', async () => {
+  renderWithRouterAndRedux(<Feedback />);
+
+  const btnRanking = screen.getByTestId('btn-ranking');
+  expect(btnRanking).toBeInTheDocument();
+
+  userEvent.click(btnRanking);
+  await waitFor(() => expect(history.location.pathname).toBe('/ranking'));
+
+});
 
 
